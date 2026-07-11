@@ -125,7 +125,7 @@
     </div>
     <button class="add-btn" onclick="addItem()">+ Tambah Berita</button>
     <div class="item-list" id="itemList"></div>
-    <button class="compile-btn" onclick="showCompile()">📜 Susun Naskah Lengkap</button>
+    <button class="compile-btn" onclick="showCompile()"> Susun Naskah Lengkap</button>
   </div>
   <div class="main" id="main"></div>
 </div>
@@ -398,7 +398,7 @@ function renderMain(){
       <div class="big">🎙️</div>
       <h3>Belum ada berita dipilih</h3>
       <p>Tambahkan berita dari sidebar, tempel judul + isi artikelnya, lalu klik "Ubah ke Naskah" untuk membuat versi teleprompter otomatis.</p>
-      <div class="toolbar"><button class="primary" onclick="showSettings()">⚙️ Atur Template Pembuka/Promosi/Penutup</button></div>
+      <div class="toolbar"><button class="primary" onclick="showSettings()">Atur Template Pembuka/Promosi/Penutup</button></div>
     </div>`;
     return;
   }
@@ -410,8 +410,8 @@ function renderMain(){
         <div class="sub">Tempel link & isi artikel, lalu proses jadi naskah siaran.</div>
       </div>
       <div style="display:flex;gap:10px;">
-        <button class="del-link" onclick="showSettings()">⚙️ Template</button>
-        <button class="del-link" onclick="deleteItem('${it.id}')">🗑 Hapus berita ini</button>
+        <button class="del-link" onclick="showSettings()">Template</button>
+        <button class="del-link" onclick="deleteItem('${it.id}')">Hapus berita ini</button>
       </div>
     </div>
 
@@ -438,7 +438,7 @@ function renderMain(){
     </div>
 
     <button class="gen-btn" ${it.status==='generating'?'disabled':''} onclick="generate('${it.id}')">
-      ${it.status==='generating' ? '⏳ Memproses...' : (it.status==='done' ? '🔁 Proses Ulang ke Naskah' : '✨ Ubah ke Naskah')}
+      ${it.status==='generating' ? '⏳ Memproses...' : (it.status==='done' ? '🔁 Proses Ulang ke Naskah' : 'Ubah ke Naskah')}
     </button>
 
     ${it.error ? `<div class="err-box">${escapeHtml(it.error)}</div>` : ''}
