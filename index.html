@@ -122,7 +122,7 @@
     <div class="brand">
       <div class="brand-top"><span class="lamp" id="lamp"></span><span class="brand-title">On Air Script Tool</span></div>
       <h1>Gerbang Nusantara</h1>
-      <p>Studio naskah — ubah berita jadi teleprompter</p>
+      <p>Studio naskah — ubah berita jadi teleprompter (Gemini Free)</p>
     </div>
     <button class="add-btn" onclick="addItem()">+ Tambah Berita</button>
     <div class="item-list" id="itemList"></div>
@@ -170,7 +170,6 @@ function newItem(){
   };
 }
 
-// FIX: Menggunakan localStorage standar browser
 function loadAll(){
   try{
     const r = localStorage.getItem('gn-items');
@@ -231,88 +230,83 @@ function setLamp(busy){
   document.getElementById('lamp').classList.toggle('busy', busy);
 }
 
-// FIX: Integrasi API Key Dinamis & Proxy pelindung CORS
+// FIX UTAMA: Migrasi Total ke Google Gemini API (100% Gratis & Bebas CORS)
 async function generate(id){
   const it = getItem(id);
   if(!it || !it.raw.trim()){ it.error='Tempel dulu isi/teks berita sebelum diproses.'; render(); return; }
   
   if(!state.settings.apiKey || !state.settings.apiKey.trim()){
-    it.error='API Key Anthropic belum diatur. Klik menu "Template & API" di kanan atas terlebih dahulu.';
+    it.error='Gemini API Key belum diatur. Klik menu "Template & API" di kanan atas untuk memasukkan key gratis.';
     render();
     return;
   }
 
   it.status = 'generating'; it.error=''; render(); setLamp(true);
 
-  const system = `Kamu adalah penulis naskah untuk sesi live streaming berita mingguan bernama "Gerbang Nusantara". Tugasmu: ubah satu artikel berita mentah menjadi naskah teleprompter dengan format baku berikut, dan JAWAB HANYA DALAM JSON VALID, tanpa markdown, tanpa penjelasan tambahan.
+  const systemInstruction = `Kamu adalah penulis naskah profesional untuk sesi live streaming berita mingguan bernama "Gerbang Nusantara". Tugasmu: ubah artikel berita mentah menjadi naskah teleprompter dengan format baku JSON. JAWAB HANYA DALAM JSON VALID, TAMPILKAN JSON SAJA TANPA MARKDOWN BACKTICKS (\`\`\`json), TANPA PENJELASAN LAIN.
 
-Format setiap section adalah ARRAY berisi kalimat-kalimat sangat pendek (3-9 kata), gaya bicara lisan santai untuk dibaca di teleprompter, dipecah per potongan frasa alami (seperti naskah TV/berita presenter). Jangan buat kalimat panjang dalam satu elemen array.
+Format setiap section adalah ARRAY berisi potongan kalimat-kalimat lisan yang sangat pendek (3-9 kata), mengalir, santai, dan mudah dibaca per potongan frasa alami tanpa putus di tengah kalimat panjang.
 
-Struktur JSON yang harus dihasilkan:
+Struktur JSON wajib tepat seperti ini:
 {
- "judul": "judul singkat berita, gaya headline",
- "hoox": [...],
- "story": [...],
- "observation": [...],
- "problem": [...],
- "insight": [...],
- "solusi": [...],
- "benefit": [...],
- "connection": [...],
- "cta": [...],
- "reaksi": [...]
+ "judul": "judul singkat berita, gaya headline menarik",
+ "hoox": ["potongan kalimat 1", "potongan 2"],
+ "story": ["potongan kalimat 1", "potongan 2"],
+ "observation": ["potongan kalimat 1", "potongan 2"],
+ "problem": ["potongan kalimat 1", "potongan 2"],
+ "insight": ["potongan kalimat 1", "potongan 2"],
+ "solusi": ["potongan kalimat 1", "potongan 2"],
+ "benefit": ["potongan kalimat 1", "potongan 2"],
+ "connection": ["potongan kalimat 1", "potongan 2"],
+ "cta": ["potongan kalimat 1", "potongan 2"],
+ "reaksi": ["potongan kalimat 1", "potongan 2"]
 }
 
-Gunakan bahasa Indonesia jurnalistik yang netral dan faktual, hanya berdasarkan informasi yang ada di teks yang diberikan. Jangan mengarang data atau kutipan yang tidak ada di sumber. Jangan gunakan kata ganti "saya".`;
+Gunakan bahasa Indonesia jurnalistik lisan yang netral, faktual, dan murni berdasarkan data artikel sumber. Jangan mengarang hoax atau mengubah fakta yang tidak ada di teks sumber.`;
 
-  const userMsg = `Judul (jika ada): ${it.judul || '(tidak ada, buatkan sendiri dari isi)'}
-Kategori/topik: ${it.kategori || '(tidak disebutkan)'}
-Link sumber: ${it.url || '(tidak disebutkan)'}
+  const userMsg = `Judul berita saat ini: ${it.judul || 'Otomatis'}\nKategori: ${it.kategori || 'Umum'}\nIsi Teks Berita mentah:\n${it.raw}`;
 
-Teks berita:
-"""
-${it.raw}
-"""`;
-
-  // Melakukan bypass batasan CORS browser via corsproxy.io
-  const proxyUrl = "https://corsproxy.io/?";
-  const targetUrl = "https://api.anthropic.com/v1/messages";
+  // Menggunakan model Gemini 1.5 Flash (Gratis, Cepat, dan Akurat)
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${state.settings.apiKey.trim()}`;
 
   try{
-    const resp = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': state.settings.apiKey.trim(),
-        'anthropic-version': '2023-06-01'
-      },
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model:'claude-3-5-sonnet-20241022',
-        max_tokens: 2000,
-        system: system,
-        messages:[{role:'user', content:userMsg}]
+        contents: [{ parts: [{ text: userMsg }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.3
+        }
       })
     });
     
     if(!resp.ok) {
-      const errText = await resp.text();
-      throw new Error(`API error (${resp.status}): ${errText}`);
+      const errData = await resp.json();
+      throw new Error(errData.error?.message || 'Gemini API Error');
     }
 
     const data = await resp.json();
-    const textBlock = (data.content||[]).find(c=>c.type==='text');
-    if(!textBlock) throw new Error('Tidak ada respons teks dari model.');
-    let clean = textBlock.text.trim().replace(/^```json/,'').replace(/^```/,'').replace(/```$/,'').trim();
-    const parsed = JSON.parse(clean);
+    let rawText = data.candidates[0].content.parts[0].text.trim();
     
-    it.hasil = {judul: parsed.judul || it.judul || ''};
-    SECTION_DEFS.forEach(s=>{ it.hasil[s.key] = Array.isArray(parsed[s.key]) ? parsed[s.key] : []; });
+    // Pembersihan jika model melanggar instruksi dan tetap membungkus dengan markdown
+    rawText = rawText.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+    
+    const parsed = JSON.parse(rawText);
+    
+    it.hasil = { judul: parsed.judul || it.judul || 'Berita Terproses' };
+    SECTION_DEFS.forEach(s => { 
+      it.hasil[s.key] = Array.isArray(parsed[s.key]) ? parsed[s.key] : []; 
+    });
+    
     if(!it.judul) it.judul = it.hasil.judul;
     it.status = 'done';
   }catch(e){
     console.error(e);
     it.status = 'error';
-    it.error = 'Gagal memproses naskah. Periksa kembali validitas API Key Anda di menu Pengaturan.';
+    it.error = 'Gagal memproses naskah dengan Gemini. Pastikan API Key Anda benar dan kuota gratis mencukupi.';
   }
   setLamp(false);
   saveItems();
@@ -360,8 +354,6 @@ function compileScriptText(){
   }).join('\n');
 }
 
-/* ---------------- RENDER ---------------- */
-
 function render(){
   renderSidebar();
   renderMain();
@@ -370,7 +362,7 @@ function render(){
 function renderSidebar(){
   const list = document.getElementById('itemList');
   if(!state.items.length){
-    list.innerHTML = `<div class="empty-hint">Belum ada berita. Klik "+ Tambah Berita" untuk mulai menempel link/teks berita dan mengubahnya jadi naskah siaran.</div>`;
+    list.innerHTML = `<div class="empty-hint">Belum ada berita. Klik "+ Tambah Berita" untuk mulai.</div>`;
     return;
   }
   list.innerHTML = state.items.map((it, idx)=>{
@@ -401,8 +393,8 @@ function renderMain(){
     main.innerHTML = `<div class="empty-main">
       <div class="big">🎙️</div>
       <h3>Belum ada berita dipilih</h3>
-      <p>Tambahkan berita dari sidebar, tempel judul + isi artikelnya, lalu klik "Ubah ke Naskah" untuk membuat versi teleprompter otomatis.</p>
-      <div class="toolbar"><button class="primary" onclick="showSettings()">Atur Template & API Key</button></div>
+      <p>Tambahkan berita dari sidebar, tempel tulisan berita Anda, lalu dapatkan naskah teleprompter instan gratis dengan Gemini AI.</p>
+      <div class="toolbar"><button class="primary" onclick="showSettings()">Atur Template & Gemini API Key</button></div>
     </div>`;
     return;
   }
@@ -411,7 +403,7 @@ function renderMain(){
     <div class="topbar">
       <div>
         <h2>Edit Berita</h2>
-        <div class="sub">Tempel link & isi artikel, lalu proses jadi naskah siaran.</div>
+        <div class="sub">Ubah artikel mentah menjadi gaya baca berita presenter TV.</div>
       </div>
       <div style="display:flex;gap:10px;">
         <button class="del-link" onclick="showSettings()">Template & API</button>
@@ -424,25 +416,25 @@ function renderMain(){
 
     <div class="row2">
       <div>
-        <label>Judul (opsional, bisa diisi otomatis)</label>
+        <label>Judul (opsional)</label>
         <input type="text" placeholder="Judul berita" value="${escapeHtml(it.judul)}" oninput="updateField('${it.id}','judul',this.value)">
       </div>
       <div>
         <label>Kategori / topik</label>
-        <input type="text" placeholder="mis. Korupsi Tambang Kaltim" value="${escapeHtml(it.kategori)}" oninput="updateField('${it.id}','kategori',this.value)">
+        <input type="text" placeholder="mis. Berita Daerah" value="${escapeHtml(it.kategori)}" oninput="updateField('${it.id}','kategori',this.value)">
       </div>
     </div>
 
     <label>Tempel isi artikel di sini</label>
-    <textarea class="raw" placeholder="Salin-tempel isi berita lengkap dari link di atas..." oninput="updateField('${it.id}','raw',this.value)">${escapeHtml(it.raw)}</textarea>
+    <textarea class="raw" placeholder="Salin isi teks berita lengkap di sini..." oninput="updateField('${it.id}','raw',this.value)">${escapeHtml(it.raw)}</textarea>
 
     <div class="promo-toggle">
       <input type="checkbox" id="promo-${it.id}" ${it.insertPromoAfter?'checked':''} onchange="updateField('${it.id}','insertPromoAfter',this.checked)">
-      <label for="promo-${it.id}" style="margin:0;text-transform:none;font-weight:400;color:var(--text-dim);">Sisipkan segmen "Selingan Promosi" setelah berita ini di naskah lengkap</label>
+      <label for="promo-${it.id}" style="margin:0;text-transform:none;font-weight:400;color:var(--text-dim);">Sisipkan segmen "Selingan Promosi" setelah berita ini</label>
     </div>
 
     <button class="gen-btn" ${it.status==='generating'?'disabled':''} onclick="generate('${it.id}')">
-      ${it.status==='generating' ? '⏳ Memproses...' : (it.status==='done' ? '🔁 Proses Ulang ke Naskah' : 'Ubah ke Naskah')}
+      ${it.status==='generating' ? '⏳ Sedang Meracik Naskah...' : (it.status==='done' ? '🔁 Regenerasi Naskah' : 'Ubah ke Naskah')}
     </button>
 
     ${it.error ? `<div class="err-box">${escapeHtml(it.error)}</div>` : ''}
@@ -471,13 +463,13 @@ function renderSettings(main){
   const s = state.settings;
   main.innerHTML = `
     <div class="topbar">
-      <div><h2>Template & API Pengaturan</h2><div class="sub">Konfigurasi Anthropic API Key secara lokal (Aman untuk GitHub Pages) beserta segmen naskah.</div></div>
+      <div><h2>Pengaturan & API Google Gemini</h2><div class="sub">Gunakan Gemini API Key gratis untuk menghindari error CORS browser.</div></div>
       <button class="del-link" onclick="state.view='edit';render()">← Kembali</button>
     </div>
     <div class="settings-panel">
-      <h3>Anthropic API Key</h3>
-      <input type="password" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;" placeholder="sk-ant-..." value="${escapeHtml(s.apiKey)}" oninput="state.settings.apiKey=this.value; saveSettings();">
-      <small style="color:var(--text-dim); display:block; margin-top:5px;">Kunci disimpan secara lokal di browser Anda sendiri. Tidak dikirim atau diekspos ke publik repositori.</small>
+      <h3>Google Gemini API Key (Gratis)</h3>
+      <input type="password" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;" placeholder="AIzaSy..." value="${escapeHtml(s.apiKey)}" oninput="state.settings.apiKey=this.value; saveSettings();">
+      <small style="color:var(--text-dim); display:block; margin-top:5px;">Kunci disimpan aman secara lokal di browser Anda pribadi. Dapatkan gratis di <a href="[https://aistudio.google.com/](https://aistudio.google.com/)" target="_blank" style="color:var(--amber);">Google AI Studio</a>.</small>
     </div>
     <div class="settings-panel">
       <h3>Pembuka Sesi Live</h3>
@@ -498,7 +490,7 @@ function renderCompile(main){
   const lines = compileScript();
   main.innerHTML = `
     <div class="topbar">
-      <div><h2>Naskah Lengkap</h2><div class="sub">Gabungan pembuka, semua berita, promosi, dan penutup — siap dibaca di teleprompter.</div></div>
+      <div><h2>Naskah Lengkap</h2><div class="sub">Siap dibaca langsung atau disalin ke perangkat teleprompter Anda.</div></div>
       <button class="del-link" onclick="state.view='edit';render()">← Kembali</button>
     </div>
     <div class="toolbar">
@@ -521,7 +513,7 @@ function downloadScript(){
   const blob = new Blob([compileScriptText()], {type:'text/plain;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'naskah-gerbang-nusantara.txt';
+  a.href = url; a.download = 'naskah-live-gerbang-nusantara.txt';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
