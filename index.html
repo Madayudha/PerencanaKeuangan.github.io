@@ -3,522 +3,881 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studio Naskah — Gerbang Nusantara</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Kynan</title>
 <style>
   :root{
-    --bg: #12161A;
-    --panel: #181D22;
-    --panel-2: #1F262C;
-    --line: #2A3238;
-    --text: #EDEAE3;
-    --text-dim: #9AA5AB;
-    --amber: #F2A20C;
-    --amber-dim: #7A5710;
-    --teal: #3FA5A0;
-    --red-live: #E24B3C;
+    --indigo: #635bff;
+    --indigo-dark: #4f46e5;
+    --indigo-light: #eef0ff;
+    --text-dark: #1e1b3a;
+    --text-mid: #55516f;
+    --text-soft: #8a86a3;
+    --border: #e8e6f5;
+    --green: #16a34a;
+    --red: #e11d48;
+    --bg-grad: linear-gradient(135deg, #eef0fb 0%, #f3eef7 40%, #e9f7f0 100%);
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;height:100vh;overflow:hidden;}
-  .app{display:grid;grid-template-columns:300px 1fr;height:100vh;}
-
-  /* ---------- SIDEBAR ---------- */
-  .sidebar{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;}
-  .brand{padding:20px 18px 14px;border-bottom:1px solid var(--line);}
-  .brand-top{display:flex;align-items:center;gap:8px;}
-  .lamp{width:9px;height:9px;border-radius:50%;background:var(--red-live);box-shadow:0 0 8px var(--red-live);}
-  .lamp.busy{animation:pulse 1s infinite;}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
-  .brand-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--text-dim);text-transform:uppercase;}
-  .brand h1{margin:6px 0 2px;font-size:19px;font-weight:800;letter-spacing:-0.01em;}
-  .brand p{margin:0;font-size:12px;color:var(--text-dim);}
-
-  .add-btn{margin:14px 18px;padding:10px 12px;background:var(--amber);color:#1A1400;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
-  .add-btn:hover{background:#ffb42b;}
-
-  .item-list{overflow-y:auto;flex:1;padding:0 10px 10px;}
-  .item-card{padding:11px 12px;border-radius:9px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;position:relative;}
-  .item-card:hover{background:var(--panel-2);}
-  .item-card.active{background:var(--panel-2);border-color:var(--amber-dim);}
-  .item-card .n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal);}
-  .item-card .t{font-size:13px;font-weight:600;margin:3px 0 4px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-  .item-card .meta{display:flex;gap:6px;align-items:center;font-size:10.5px;color:var(--text-dim);}
-  .status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-  .status-draft{background:#565f65;}
-  .status-generating{background:var(--amber);animation:pulse 1s infinite;}
-  .status-done{background:#4BBF7A;}
-  .status-error{background:var(--red-live);}
-  .empty-hint{padding:30px 18px;color:var(--text-dim);font-size:12.5px;line-height:1.6;}
-
-  .compile-btn{margin:10px 18px 18px;padding:11px;border-radius:8px;border:1px solid var(--teal);color:var(--teal);background:transparent;font-weight:700;font-size:12.5px;cursor:pointer;}
-  .compile-btn:hover{background:rgba(63,165,160,.12);}
-
-  /* ---------- MAIN ---------- */
-  .main{overflow-y:auto;padding:26px 34px 60px;}
-  .topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;gap:16px;}
-  .topbar h2{margin:0;font-size:20px;font-weight:800;}
-  .topbar .sub{color:var(--text-dim);font-size:12.5px;margin-top:4px;}
-  .del-link{color:var(--red-live);font-size:12px;background:none;border:none;cursor:pointer;padding:6px 0;}
-
-  label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin:18px 0 6px;font-weight:600;}
-  input[type=text], input[type=url], textarea, select{
-    width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;color:var(--text);
-    padding:10px 12px;font-family:'Sora',sans-serif;font-size:13.5px;resize:vertical;
+  body{
+    margin:0;
+    font-family: 'Segoe UI', Inter, Arial, sans-serif;
+    background: var(--bg-grad);
+    color: var(--text-dark);
+    min-height:100vh;
   }
-  textarea:focus, input:focus, select:focus{outline:none;border-color:var(--amber-dim);}
-  textarea.raw{min-height:130px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.5;}
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+  /* SIDEBAR */
+  .sidebar{
+    width:255px;
+    background:#fff;
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:20px 16px;
+    flex-shrink:0;
+  }
+  .sidebar-top .logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:800;
+    font-size:20px;
+    color:var(--text-dark);
+    padding: 4px 8px 18px 8px;
+    position:relative;
+  }
+  .logo .mark{
+    width:26px;height:26px;
+    border-radius:7px;
+    background:linear-gradient(135deg,#6d5bff,#3ddc97);
+    display:inline-flex;align-items:center;justify-content:center;
+    color:#fff;font-size:14px;font-weight:900;
+  }
+  .bell{
+    position:absolute;
+    right:8px; top:2px;
+    color:#9490ab;
+    font-size:18px;
+  }
+  .bell .badge{
+    position:absolute;
+    top:-6px;right:-8px;
+    background:#e11d48;
+    color:#fff;
+    font-size:10px;
+    font-weight:700;
+    border-radius:50%;
+    width:16px;height:16px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .upgrade-btn{
+    background:linear-gradient(90deg,#6d5bff,#f5a623);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:10px 14px;
+    font-weight:700;
+    font-size:14px;
+    width:100%;
+    margin-bottom:18px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 12px;
+    border-radius:10px;
+    color:var(--text-mid);
+    font-size:14.5px;
+    font-weight:500;
+    cursor:pointer;
+    margin-bottom:2px;
+    position:relative;
+    transition: background .15s, color .15s;
+  }
+  .nav-item .ic{ width:18px; text-align:center; font-size:15px; }
+  .nav-item:hover{ background:#f5f4fb; }
+  .nav-item.active{
+    background:var(--indigo-light);
+    color:var(--indigo-dark);
+    font-weight:700;
+  }
+  .nav-item .dot{
+    position:absolute; right:10px;
+    width:6px;height:6px;border-radius:50%;
+    background:var(--indigo-dark);
+  }
+  .sidebar-bottom{
+    border-top:1px solid var(--border);
+    padding-top:14px;
+  }
+  .theme-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 10px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-bottom:14px;
+    font-size:14px;
+  }
+  .theme-row span.label{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--text-dark);}
+  .theme-row .val{color:var(--text-soft);font-size:13px;}
+  .user-row{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 10px;
+    margin-bottom:6px;
+  }
+  .avatar{
+    width:34px;height:34px;border-radius:50%;
+    background:#134e3a;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px;
+  }
+  .user-row .name{font-size:14px;font-weight:700;color:var(--text-dark);}
+  .user-row .mail{font-size:12px;color:var(--text-soft);}
+  .signout{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 10px;
+    color:#8a86a3;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .signout:hover{ color: var(--red); }
 
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  /* MAIN */
+  .main{
+    flex:1;
+    padding:34px 44px;
+    position:relative;
+    overflow-y:auto;
+  }
+  .page{ display:none; }
+  .page.active{ display:block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
 
-  .gen-btn{margin-top:18px;padding:12px 18px;background:var(--amber);color:#1A1400;border:none;border-radius:8px;font-weight:700;font-size:13.5px;cursor:pointer;}
-  .gen-btn:disabled{opacity:.5;cursor:default;}
-  .gen-btn:hover:not(:disabled){background:#ffb42b;}
+  .page-header{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    margin-bottom:24px;
+  }
+  .page-header h1{ font-size:26px; margin:0 0 4px 0; font-weight:800; }
+  .page-header p.sub{ margin:0; color:var(--text-soft); font-size:14px; }
+  .header-actions{ display:flex; gap:10px; }
+  .icon-btn{
+    background:#fff; border:1px solid var(--border);
+    border-radius:10px; padding:9px 14px;
+    display:flex;align-items:center;gap:6px;
+    font-size:13px; font-weight:600; color:var(--text-mid);
+    cursor:pointer;
+  }
+  .icon-btn.primary{ background:var(--indigo-dark); color:#fff; border:none; }
 
-  .err-box{margin-top:12px;padding:10px 12px;background:rgba(226,75,60,.12);border:1px solid var(--red-live);border-radius:8px;color:#ffb3ab;font-size:12.5px;}
+  .card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px 24px;
+    margin-bottom:20px;
+  }
+  .tabs{
+    display:flex; background:#f1f0f8; border-radius:12px; padding:4px;
+    width:fit-content; margin-bottom:20px;
+  }
+  .tabs .tab{
+    padding:8px 20px; border-radius:9px; font-size:13.5px; font-weight:600;
+    color:var(--text-mid); cursor:pointer;
+  }
+  .tabs .tab.active{ background:#fff; color:var(--indigo-dark); box-shadow:0 1px 3px rgba(0,0,0,.08); }
 
-  .sections{margin-top:26px;}
-  .sec-block{margin-bottom:20px;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
-  .sec-block:focus-within{border-color: var(--amber-dim);}
-  .sec-head{padding:10px 14px;background:var(--panel-2);display:flex;align-items:center;justify-content:space-between;}
-  .sec-head .tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);}
-  .sec-head .hint{font-size:10.5px;color:var(--text-dim);}
-  .sec-body{padding:12px 14px;}
-  .sec-body textarea{border:none;background:transparent;padding:0;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;min-height:70px;}
-  .sec-body textarea:focus{outline:none;}
+  .month-nav{
+    display:flex; align-items:center; justify-content:center; gap:18px;
+    margin-bottom:18px; font-weight:700;
+  }
+  .month-nav .arrow{ cursor:pointer; color:var(--text-soft); font-size:15px; }
 
-  /* ---------- TELEPROMPTER / COMPILE VIEW ---------- */
-  .prompter-wrap{background:#0B0E11;border-radius:12px;border:1px solid var(--line);padding:26px 30px;}
-  .prompter-line{font-family:'JetBrains Mono',monospace;font-size:15px;line-height:2.05;color:#F4F1EA;}
-  .prompter-line.tag-line{color:var(--amber);font-weight:700;margin-top:22px;margin-bottom:6px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;}
-  .prompter-line.title-line{color:var(--teal);font-weight:700;font-size:16.5px;margin-top:26px;}
-  .prompter-line.promo-line{color:#7f8a90;font-style:italic;}
+  .filters-row{ display:flex; gap:12px; margin-bottom:14px; }
+  .search-box{
+    flex:1; display:flex; align-items:center; gap:8px;
+    border:1px solid var(--border); border-radius:10px; padding:10px 14px;
+    color:var(--text-soft); font-size:14px; background:#fff;
+  }
+  .select-box{
+    border:1px solid var(--border); border-radius:10px; padding:10px 14px;
+    font-size:14px; color:var(--text-mid); background:#fff; min-width:140px;
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+  }
+  .empty-state{
+    text-align:center; padding:70px 0; color:var(--text-soft);
+  }
+  .empty-state .emoji{ font-size:34px; margin-bottom:14px; }
 
-  .toolbar{display:flex;gap:10px;margin-bottom:18px;}
-  .toolbar button{padding:9px 14px;border-radius:7px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);font-size:12.5px;cursor:pointer;font-weight:600;}
-  .toolbar button:hover{border-color:var(--amber-dim);}
-  .toolbar button.primary{background:var(--amber);color:#1A1400;border-color:var(--amber);}
-  .toolbar button.primary:hover{background:#ffb42b;}
+  .stat-grid{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:20px;
+  }
+  .stat-card{
+    background:#fff; border:1px solid var(--border); border-radius:14px;
+    padding:18px 18px;
+  }
+  .stat-card .label{ display:flex; justify-content:space-between; align-items:center; color:var(--text-soft); font-size:13px; margin-bottom:10px;}
+  .stat-card .value{ font-size:20px; font-weight:800; }
 
-  .settings-panel{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:20px;}
-  .settings-panel h3{margin:0 0 10px;font-size:13px;}
-  .promo-toggle{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--text-dim);}
+  .net-balance-box{
+    background:linear-gradient(135deg,#fdf6e8,#eaf7ee);
+    border:1px solid #f1e6c8;
+    border-radius:16px; padding:22px 26px; margin-bottom:22px;
+  }
+  .net-balance-box .lbl{ font-size:12px; letter-spacing:.5px; color:#a08a4a; font-weight:700; }
+  .net-balance-box .amt{ font-size:32px; font-weight:800; margin:6px 0 8px 0; }
+  .net-balance-box .note{ font-size:12.5px; color:var(--text-soft); }
 
-  .empty-main{display:flex;flex-direction:column;align-items:center;justify-content:center;height:70vh;color:var(--text-dim);text-align:center;gap:14px;}
-  .empty-main .big{font-size:44px;}
-  .empty-main h3{color:var(--text);margin:0;font-size:16px;}
-  .empty-main p{margin:0;font-size:13px;max-width:340px;line-height:1.6;}
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .section-title{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:15px; margin-bottom:2px;}
+  .section-title .sqicon{
+    width:34px;height:34px;border-radius:9px;background:var(--indigo-light);
+    display:flex;align-items:center;justify-content:center;color:var(--indigo-dark);font-size:16px;flex-shrink:0;
+  }
+  .section-sub{ color:var(--text-soft); font-size:12.5px; margin:0 0 14px 44px; }
+  .dashed-box{
+    border:1.5px dashed #d8d5ef; border-radius:12px; text-align:center; padding:30px 10px;
+  }
+  .btn-ghost{
+    background:var(--indigo-light); color:var(--indigo-dark); border:none;
+    padding:9px 16px; border-radius:9px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  .btn-outline{
+    background:#fff; border:1px solid var(--border); color:var(--text-mid);
+    padding:9px 16px; border-radius:9px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  .account-row{
+    display:flex; align-items:center; gap:12px; padding:12px 0;
+    border-bottom:1px solid #f2f1f8;
+  }
+  .account-row:last-child{ border-bottom:none; }
+  .acc-icon{
+    width:38px;height:38px;border-radius:10px;background:#f5f4fb;
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+  }
+  .acc-info{ flex:1; }
+  .acc-info .n{ font-weight:700; font-size:14px; }
+  .acc-info .d{ font-size:12px; color:var(--text-soft); }
+  .acc-amt{ font-weight:700; font-size:14px; text-align:right; }
+  .acc-amt .r{ font-size:11px; color:var(--text-soft); font-weight:400; display:block; }
+  .star{ color:#d8d5ef; margin-left:8px; cursor:pointer; }
+  .badge-utama{
+    background:#ecf9f0; color:#16a34a; font-size:10.5px; font-weight:700;
+    padding:2px 8px; border-radius:20px; margin-left:6px;
+  }
 
-  .copy-toast{position:fixed;bottom:24px;right:24px;background:#4BBF7A;color:#062011;padding:10px 16px;border-radius:8px;font-size:12.5px;font-weight:700;opacity:0;transition:opacity .25s;pointer-events:none;}
-  .copy-toast.show{opacity:1;}
+  .progress{
+    height:9px; background:#eee9f9; border-radius:6px; overflow:hidden; margin:12px 0 8px 0;
+  }
+  .progress .fill{ height:100%; background:var(--indigo-dark); border-radius:6px; }
 
-  ::-webkit-scrollbar{width:9px;}
-  ::-webkit-scrollbar-thumb{background:#2A3238;border-radius:5px;}
+  .budget-item{
+    display:flex; align-items:center; gap:14px; margin-bottom:6px;
+  }
+  .budget-item .emoji-box{
+    width:36px;height:36px;border-radius:9px;background:#fdf1ee;
+    display:flex;align-items:center;justify-content:center;font-size:17px;
+  }
+  .budget-item .info{ flex:1; }
+  .budget-item .info .t{ font-weight:700; font-size:14.5px; }
+  .budget-item .info .s{ font-size:12px; color:var(--text-soft); }
+  .budget-actions{ display:flex; gap:10px; color:var(--text-soft); }
+
+  .recur-toggle{
+    display:flex; background:#f1f0f8; border-radius:12px; padding:4px; width:fit-content; margin-bottom:20px;
+  }
+  .recur-toggle div{
+    padding:9px 26px; border-radius:9px; font-weight:700; font-size:13.5px; color:var(--text-mid); cursor:pointer;
+  }
+  .recur-toggle div.active{ background:#fff; color:var(--text-dark); box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .recur-row{
+    display:flex; align-items:center; justify-content:space-between; padding:6px 0;
+  }
+  .recur-left{ display:flex; align-items:center; gap:14px; }
+  .recur-left .icons{ display:flex; }
+  .recur-left .icons div{ width:34px;height:34px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:15px; border:2px solid #fff; margin-left:-8px;}
+  .recur-left .info .t{ font-weight:700; font-size:14.5px; }
+  .recur-left .info .tag{ background:#f1f0f8; font-size:10.5px; padding:2px 8px; border-radius:20px; margin-left:6px; color:var(--text-mid); font-weight:700;}
+  .recur-left .info .d{ font-size:12px; color:var(--text-soft); margin-top:2px; }
+
+  .ai-insight{
+    background:linear-gradient(135deg,#f4f2fd,#f8f6fe);
+    border:1px solid #e6e2f8; border-radius:16px; padding:20px 22px; margin-bottom:20px;
+  }
+  .ai-insight .row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .ai-insight .row .ic{ width:32px;height:32px;border-radius:9px;background:var(--indigo-light);display:flex;align-items:center;justify-content:center;color:var(--indigo-dark);}
+  .ai-insight .row .t{ font-weight:800; font-size:14.5px; }
+  .ai-insight .row .s{ font-size:11.5px; color:var(--text-soft); }
+  .ai-insight p{ font-size:13.5px; color:var(--text-mid); margin:0 0 14px 0; }
+
+  .chart-box{ height:200px; position:relative; border-left:1px solid #eee; border-bottom:1px solid #eee; margin:20px 10px 8px 40px; }
+  .chart-box .yl{ position:absolute; left:-38px; font-size:11px; color:var(--text-soft); }
+  .chart-box .xl{ position:absolute; bottom:-22px; font-size:11px; color:var(--text-soft); transform:translateX(-50%); }
+  .legend{ display:flex; gap:16px; font-size:12px; color:var(--text-mid); margin-top:26px; }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .legend .sq{ width:9px;height:9px;border-radius:2px; }
+
+  table.summary{ width:100%; border-collapse:collapse; font-size:14px; }
+  table.summary th{ text-align:left; color:var(--text-soft); font-weight:600; font-size:12.5px; padding-bottom:10px; border-bottom:1px solid var(--border);}
+  table.summary td{ padding:12px 0; border-bottom:1px solid #f4f3fa; }
+  table.summary td.month{ font-weight:700; }
+  table.summary td.income{ color:var(--indigo-dark); font-weight:600;}
+  table.summary td.expense{ color:var(--red); font-weight:600;}
+  table.summary td.balance{ color:var(--text-dark); font-weight:700;}
+
+  .cat-card{
+    background:#fff; border:1px solid var(--border); border-radius:16px; padding:22px 24px; margin-bottom:20px;
+  }
+  .cat-head{ display:flex; align-items:center; gap:10px; margin-bottom:2px; font-weight:800; font-size:15px;}
+  .cat-head .ic{ color:var(--text-mid); }
+  .cat-sub{ color:var(--text-soft); font-size:12.5px; margin:0 0 16px 0; }
+  .custom-cat-row{
+    display:flex; align-items:center; justify-content:space-between; background:#f8f7fc;
+    border-radius:12px; padding:14px 16px;
+  }
+  .custom-cat-row .l{ display:flex; align-items:center; gap:12px; }
+  .custom-cat-row .l .emo{ font-size:20px; }
+  .custom-cat-row .l .t{ font-weight:700; font-size:14.5px; }
+  .income-pill{ background:#eaf9ee; color:#16a34a; font-size:10.5px; padding:2px 10px; border-radius:20px; font-weight:700; margin-left:6px; }
+  .cat-icons{ display:flex; gap:14px; color:var(--text-soft); }
+  .preset-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+  .preset-item{
+    display:flex; align-items:center; justify-content:space-between; background:#f8f7fc;
+    border-radius:10px; padding:11px 14px; font-size:14px; font-weight:600; color:var(--text-dark);
+  }
+  .preset-item .l{ display:flex; align-items:center; gap:10px; }
+  .dotc{ width:8px;height:8px;border-radius:50%; }
+  .lock-btn{
+    display:flex; align-items:center; gap:6px; background:var(--indigo-light); color:var(--indigo-dark);
+    border:none; border-radius:10px; padding:9px 16px; font-weight:700; font-size:13px; cursor:pointer;
+  }
+
+  .household-code{
+    text-align:center; font-size:30px; font-weight:800; letter-spacing:6px; color:var(--indigo-dark);
+    margin:18px 0;
+  }
+  .household-member{
+    display:flex; align-items:center; justify-content:space-between; margin-top:8px;
+  }
+  .household-member .l{ display:flex; align-items:center; gap:12px; }
+  .admin-pill{ background:var(--indigo-dark); color:#fff; font-size:11px; font-weight:700; padding:5px 14px; border-radius:20px;}
+  .btn-full{
+    width:100%; background:var(--indigo-dark); color:#fff; border:none; border-radius:10px;
+    padding:13px; font-weight:700; font-size:14.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .leave-card{ border-color:#fcdce6 !important; background:#fff8fa; }
+  .leave-title{ color:var(--red); font-weight:800; font-size:15px; margin-bottom:6px;}
+  .btn-outline-red{
+    background:#fff; border:1px solid #fbc7d5; color:var(--red); border-radius:10px;
+    padding:10px 18px; font-weight:700; font-size:13.5px; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+  }
+
+  .settings-field label{ font-size:13px; color:var(--text-mid); font-weight:600; }
+  .settings-field .desc{ font-size:13px; color:var(--text-soft); margin-bottom:14px; }
+  .name-input{
+    width:100%; max-width:420px; padding:12px 14px; border:1px solid var(--border); border-radius:10px;
+    font-size:14px; margin:10px 0 16px 0;
+  }
+  .toggle{
+    width:44px; height:24px; border-radius:20px; background:#e2e0f0; position:relative; cursor:pointer; flex-shrink:0;
+  }
+  .toggle .knob{ width:18px;height:18px; border-radius:50%; background:#fff; position:absolute; top:3px; left:3px; box-shadow:0 1px 3px rgba(0,0,0,.2); transition:.2s;}
+  .toggle.on{ background:var(--indigo-dark); }
+  .toggle.on .knob{ left:23px; }
+  .danger-title{ display:flex; align-items:center; gap:8px; color:var(--red); font-weight:800; font-size:15px; margin-bottom:8px;}
+  .danger-card{ border-color:#fcdce6 !important; background:#fff8fa; }
+
+  /* floating buttons */
+  .float-ai{
+    position:fixed; right:34px; bottom:88px;
+    background:var(--indigo-dark); color:#fff; border-radius:30px;
+    padding:12px 20px 12px 14px; display:flex; align-items:center; gap:8px;
+    font-weight:700; font-size:14px; box-shadow:0 8px 20px rgba(79,70,229,.35); cursor:pointer;
+  }
+  .float-add{
+    position:fixed; right:34px; bottom:30px;
+    width:52px; height:52px; border-radius:50%; background:var(--indigo-dark); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:26px; box-shadow:0 8px 20px rgba(79,70,229,.35); cursor:pointer;
+  }
 </style>
 </head>
 <body>
 <div class="app">
+
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="brand">
-      <div class="brand-top"><span class="lamp" id="lamp"></span><span class="brand-title">On Air Script Tool</span></div>
-      <h1>Gerbang Nusantara</h1>
-      <p>Studio naskah — ubah berita jadi teleprompter (Gemini Free)</p>
+    <div class="sidebar-top">
+      <div class="logo">
+        <span class="mark">K</span> Kynan
+        <span class="bell">🔔<span class="badge">2</span></span>
+      </div>
+      <button class="upgrade-btn">👑 Upgrade to Pro</button>
+
+      <div class="nav-item" data-page="dashboard"><span class="ic">🔲</span> Dashboard</div>
+      <div class="nav-item" data-page="transactions"><span class="ic">↔️</span> Transactions</div>
+      <div class="nav-item" data-page="wealth"><span class="ic">💼</span> Wealth Hub</div>
+      <div class="nav-item" data-page="planning"><span class="ic">💡</span> Planning</div>
+      <div class="nav-item" data-page="recurring"><span class="ic">🔁</span> Recurring</div>
+      <div class="nav-item" data-page="reports"><span class="ic">📊</span> Reports</div>
+      <div class="nav-item" data-page="categories"><span class="ic">🏷️</span> Categories</div>
+      <div class="nav-item" data-page="household"><span class="ic">👥</span> Household</div>
+      <div class="nav-item" data-page="whatsapp"><span class="ic">💬</span> WhatsApp Bot</div>
+      <div class="nav-item" data-page="support"><span class="ic">🛟</span> Support</div>
+      <div class="nav-item" data-page="settings"><span class="ic">⚙️</span> Settings</div>
     </div>
-    <button class="add-btn" onclick="addItem()">+ Tambah Berita</button>
-    <div class="item-list" id="itemList"></div>
-    <button class="compile-btn" onclick="showCompile()"> Susun Naskah Lengkap</button>
+
+    <div class="sidebar-bottom">
+      <div class="theme-row">
+        <span class="label">☀️ Theme</span>
+        <span class="val">Light</span>
+      </div>
+      <div class="user-row">
+        <div class="avatar">A</div>
+        <div>
+          <div class="name">Armada yudha satrya</div>
+          <div class="mail">armadayudha23@gmail.com</div>
+        </div>
+      </div>
+      <div class="signout">↪️ Sign Out</div>
+    </div>
   </div>
-  <div class="main" id="main"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="net-balance-box">
+        <div class="lbl">NET BALANCE</div>
+        <div class="amt">Rp 1.500.000</div>
+        <div class="note">Saldo kumulatif s/d Juli 2026</div>
+        <hr style="border:none;border-top:1px solid #ecdfb0;margin:14px 0;">
+        <div style="font-weight:700;color:var(--indigo-dark);font-size:14px;">Kelola keuangan bersama!</div>
+        <div style="font-size:12.5px;color:var(--text-soft);margin:4px 0 8px;">Undang pasangan atau keluarga untuk berbagi pengeluaran dan mengatur budget bersama-sama.</div>
+        <div style="font-size:13px;">Kode undangan: <b style="letter-spacing:2px;">VHKD4BRAJD</b> 📋</div>
+      </div>
+
+      <div class="card" style="text-align:center;background:linear-gradient(135deg,#f4f2fd,#f0f6fe);">
+        <div style="font-size:28px;">👋</div>
+        <h3 style="margin:8px 0 4px;">Selamat datang di Kynan!</h3>
+        <p style="color:var(--text-soft);font-size:13.5px;margin:0 0 16px;">Mulai catat keuangan kamu. Tambah transaksi pertama untuk melihat laporan dan analisis pengeluaran.</p>
+        <button class="btn-ghost" style="background:var(--indigo-dark);color:#fff;">Add First Transaction</button>
+      </div>
+
+      <div class="two-col" style="margin-bottom:20px;">
+        <div class="card" style="background:linear-gradient(135deg,#f2fbf5,#fff);">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-soft);font-size:13px;">Income</span><span>📈</span></div>
+          <div style="font-size:24px;font-weight:800;color:var(--green);margin-top:6px;">Rp 0</div>
+          <div style="font-size:12px;color:var(--text-soft);">Bulan ini</div>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,#fdf3f4,#fff);">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-soft);font-size:13px;">Expense</span><span>📉</span></div>
+          <div style="font-size:24px;font-weight:800;color:var(--red);margin-top:6px;">Rp 0</div>
+          <div style="font-size:12px;color:var(--text-soft);">Bulan ini</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-weight:800;font-size:14.5px;">🕜 This Month's Budget</div>
+          <a style="color:var(--indigo-dark);font-size:13px;font-weight:700;text-decoration:none;">Manage →</a>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;">
+          <span>Rp 0 of Rp 50.000</span><span style="font-weight:700;">Left Rp 50.000</span>
+        </div>
+        <div class="progress"><div class="fill" style="width:0%;"></div></div>
+        <div style="font-size:12px;color:var(--text-soft);">Kamu sudah memakai 0 persen dari total budget bulan ini.</div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div style="font-weight:800;font-size:14.5px;margin-bottom:14px;">Pengeluaran per Kategori</div>
+          <div class="empty-state" style="padding:40px 0;"><div style="color:var(--text-soft);font-size:13.5px;">Belum ada transaksi bulan ini</div></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-weight:800;font-size:14.5px;">Transaksi Terakhir</div>
+            <a style="color:var(--indigo-dark);font-size:13px;font-weight:700;text-decoration:none;">Lihat semua</a>
+          </div>
+          <div class="empty-state" style="padding:40px 0;"><div style="color:var(--text-soft);font-size:13.5px;">Belum ada transaksi</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="page" id="page-transactions">
+      <div class="page-header">
+        <div><h1>Transactions</h1></div>
+        <div class="header-actions">
+          <div class="icon-btn">⬇️ CSV</div>
+          <div class="icon-btn primary">☰</div>
+          <div class="icon-btn">📅</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab">Today</div>
+        <div class="tab">Week</div>
+        <div class="tab active">Month</div>
+        <div class="tab">Year</div>
+        <div class="tab">All</div>
+      </div>
+      <div class="month-nav"><span class="arrow">‹</span> Juli 2026 <span class="arrow">›</span></div>
+      <div class="filters-row">
+        <div class="search-box">🔍 <span>Search notes...</span></div>
+        <div class="select-box">All types ⌄</div>
+        <div class="select-box">All categories ⌄</div>
+      </div>
+      <div class="empty-state">
+        <div class="emoji">📋</div>
+        No transactions in this period.
+      </div>
+    </div>
+
+    <!-- WEALTH HUB -->
+    <div class="page" id="page-wealth">
+      <div class="page-header">
+        <div><h1>Wealth Hub</h1><p class="sub">Pusat income, wallet, rekening, investasi, kartu kredit, utang, dan piutang.</p></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Monthly Income 💼</div><div class="value">Rp 0</div></div>
+        <div class="stat-card"><div class="label">Total Savings 📁</div><div class="value">Rp 1.500.000</div></div>
+        <div class="stat-card"><div class="label">Total Debt ⬇️</div><div class="value">Rp 0</div></div>
+        <div class="stat-card"><div class="label">Min Payments/mo 📋</div><div class="value">Rp 0</div></div>
+        <div class="stat-card"><div class="label">Receivables ⬆️</div><div class="value">Rp 0</div></div>
+      </div>
+      <div class="net-balance-box">
+        <div class="lbl">NET BALANCE</div>
+        <div class="amt">Rp 1.500.000</div>
+        <div class="note">Assets + receivables - liabilities. Item yang dimatikan dari net balance tidak dihitung.</div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="section-title"><span class="sqicon">💼</span> Income Sources</div>
+          <div class="section-sub">Sumber pemasukan aktif dan auto deposit</div>
+          <button class="btn-ghost" style="margin-bottom:14px;">+ Add income</button>
+          <div class="dashed-box">
+            <div style="font-size:13.5px;color:var(--text-soft);margin-bottom:12px;">Belum ada data.</div>
+            <button class="btn-outline">+ Tambah income source</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><span class="sqicon">📁</span> Wallet &amp; Accounts</div>
+          <div class="section-sub">Cash, bank, e-wallet, digital bank</div>
+          <button class="btn-ghost" style="margin-bottom:6px;">+ Add wallet/account</button>
+          <div class="account-row">
+            <div class="acc-icon">💵</div>
+            <div class="acc-info"><div class="n">Cash <span class="badge-utama">★ Utama</span></div><div class="d">Tunai · Cash</div></div>
+            <div class="acc-amt">Rp 500.000<span class="r">Reserved Rp 490.000 · Sisa Rp 10.000</span></div>
+          </div>
+          <div class="account-row">
+            <div class="acc-icon">🏦</div>
+            <div class="acc-info"><div class="n">BCA</div><div class="d">Bank · BCA</div></div>
+            <div class="acc-amt">Rp 500.000</div>
+            <span class="star">☆</span><span class="star">✎</span>
+          </div>
+          <div class="account-row">
+            <div class="acc-icon">📲</div>
+            <div class="acc-info"><div class="n">DANA</div><div class="d">E-Wallet · DANA</div></div>
+            <div class="acc-amt">Rp 200.000</div>
+            <span class="star">☆</span><span class="star">✎</span>
+          </div>
+          <div class="account-row">
+            <div class="acc-icon">🏛️</div>
+            <div class="acc-info"><div class="n">SeaBank</div><div class="d">Digital Bank · SeaBank</div></div>
+            <div class="acc-amt">Rp 300.000</div>
+            <span class="star">☆</span><span class="star">✎</span>
+          </div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-top:20px;">
+        <div class="card">
+          <div class="section-title"><span class="sqicon">📈</span> Investments</div>
+          <div class="section-sub">Saham, reksadana, gold, crypto, deposito</div>
+          <button class="btn-ghost">+ Add investment</button>
+        </div>
+        <div class="card">
+          <div class="section-title"><span class="sqicon">💳</span> Credit Cards</div>
+          <div class="section-sub">Limit, billing date, due date</div>
+          <button class="btn-ghost">Tambah kartu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANNING -->
+    <div class="page" id="page-planning">
+      <div class="page-header">
+        <div><h1>Planning</h1><p class="sub">Rencanakan masa depan finansial kamu</p></div>
+      </div>
+      <div class="tabs">
+        <div class="tab active">📊 Budget</div>
+        <div class="tab">🎯 Goals</div>
+        <div class="tab">🛡️ Emergency</div>
+        <div class="tab">📓 Loan Sim</div>
+        <div class="tab">📈 Projection</div>
+        <div class="tab">❤️ Health</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-weight:700;">Juli 2026</div>
+        <div class="header-actions">
+          <div class="icon-btn">📋 Salin Bulan Lalu</div>
+          <div class="icon-btn primary">+ Set Budget</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:10px;">
+          <span>Total Pengeluaran vs Budget</span><span>Rp 0 dari Rp 50.000</span>
+        </div>
+        <div class="progress"><div class="fill" style="width:0%;"></div></div>
+        <div style="font-size:13px;">Left: <b>Rp 50.000</b></div>
+      </div>
+      <div class="card">
+        <div class="budget-item">
+          <div class="emoji-box">🍜</div>
+          <div class="info"><div class="t">Hari hari</div><div class="s">Makanan &amp; Minuman</div></div>
+          <div class="budget-actions">✎ 🗑️</div>
+        </div>
+        <div class="progress"><div class="fill" style="width:0%;"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-soft);">
+          <span>Rp 0 terpakai</span><span>dari Rp 50.000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECURRING -->
+    <div class="page" id="page-recurring">
+      <div class="page-header">
+        <div><h1>Recurring</h1><p class="sub">Otomatis catat transaksi berulang</p></div>
+        <div class="header-actions"><div class="icon-btn primary">+ Add</div></div>
+      </div>
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <span style="font-size:18px;">🔔</span>
+          <div>
+            <div style="font-weight:700;font-size:14.5px;">Pengingat tagihan</div>
+            <div style="font-size:12.5px;color:var(--text-soft);">Dapat notifikasi sebelum transaksi rutin jatuh tempo</div>
+          </div>
+        </div>
+        <div style="color:var(--indigo-dark);font-weight:700;font-size:13px;">🔒 Pro</div>
+      </div>
+      <div class="recur-toggle">
+        <div class="active">Pengeluaran</div>
+        <div>Pemasukan</div>
+      </div>
+      <div class="card">
+        <div class="recur-row">
+          <div class="recur-left">
+            <div class="icons"><div>💵</div><div>📲</div></div>
+            <div class="info">
+              <span class="t">Cash → DANA</span><span class="tag">Transfer</span>
+              <div class="d">Monthly · Next: 15 Jul 2026<br>Pln</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <b>Rp 20.000</b>
+            <span style="color:var(--indigo-dark);">⏻</span><span>✎</span><span style="color:var(--red);">🗑️</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="page-reports">
+      <div class="page-header"><div><h1>Reports</h1></div></div>
+      <div class="ai-insight">
+        <div class="row"><span class="ic">✨</span><div><div class="t">AI Insight</div><div class="s">Analisis personal dari Kynan AI · 1x sehari</div></div></div>
+        <p>Dapatkan analisis &amp; saran keuangan harian yang dipersonalisasi dari Kynan AI.</p>
+        <button class="lock-btn">🔒 Fitur Pro, upgrade</button>
+      </div>
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card"><div class="label">Income</div><div class="value" style="color:var(--indigo-dark);">Rp 0</div></div>
+        <div class="stat-card"><div class="label">Expense</div><div class="value" style="color:var(--red);">Rp 0</div></div>
+        <div class="stat-card"><div class="label">Balance</div><div class="value">Rp 0</div></div>
+      </div>
+      <div class="two-col" style="margin-bottom:20px;">
+        <div class="card" style="display:flex;align-items:center;gap:12px;"><span style="color:var(--text-soft);">—</span><div><div style="font-weight:700;">Income flat</div><div style="font-size:12px;color:var(--text-soft);">from Jun 2026</div></div></div>
+        <div class="card" style="display:flex;align-items:center;gap:12px;"><span style="color:var(--text-soft);">—</span><div><div style="font-weight:700;">Expense flat</div><div style="font-size:12px;color:var(--text-soft);">from Jun 2026</div></div></div>
+      </div>
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:20px;">Income &amp; Expense Trend</div>
+        <div class="chart-box">
+          <span class="yl" style="top:0;">0.0M</span>
+          <span class="yl" style="top:33%;">0.0M</span>
+          <span class="yl" style="top:66%;">0.0M</span>
+          <span class="yl" style="bottom:0;">0.0M</span>
+          <span class="xl" style="left:5%;">Feb 2026</span>
+          <span class="xl" style="left:25%;">Mar 2026</span>
+          <span class="xl" style="left:45%;">Apr 2026</span>
+          <span class="xl" style="left:64%;">Mei 2026</span>
+          <span class="xl" style="left:83%;">Jun 2026</span>
+          <span class="xl" style="left:99%;">Jul 2026</span>
+        </div>
+        <div class="legend"><span><i class="sq" style="background:var(--red);"></i>Expense</span><span><i class="sq" style="background:var(--green);"></i>Income</span></div>
+      </div>
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:14px;">Monthly Summary</div>
+        <table class="summary">
+          <tr><th>Month</th><th>Income</th><th>Expense</th><th>Balance</th></tr>
+          <tr><td class="month">Jul 2026</td><td class="income">Rp 0</td><td class="expense">Rp 0</td><td class="balance">Rp 0</td></tr>
+          <tr><td class="month">Jun 2026</td><td class="income">Rp 0</td><td class="expense">Rp 0</td><td class="balance">Rp 0</td></tr>
+          <tr><td class="month">Mei 2026</td><td class="income">Rp 0</td><td class="expense">Rp 0</td><td class="balance">Rp 0</td></tr>
+          <tr><td class="month">Apr 2026</td><td class="income">Rp 0</td><td class="expense">Rp 0</td><td class="balance">Rp 0</td></tr>
+          <tr><td class="month">Mar 2026</td><td class="income">Rp 0</td><td class="expense">Rp 0</td><td class="balance">Rp 0</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="page" id="page-categories">
+      <div class="page-header">
+        <div><h1>Categories</h1></div>
+        <div class="header-actions"><div class="icon-btn primary">+ Add Category</div></div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-head"><span class="ic">🏷️</span> Custom Categories</div>
+        <p class="cat-sub">Kategori buatan kamu · maks. 5 untuk akun gratis</p>
+        <div class="custom-cat-row">
+          <div class="l"><span class="emo">💡</span><div><span class="t">Bangun bisnis</span><span class="income-pill">Income</span></div></div>
+          <div class="cat-icons"><span style="color:var(--green);">●</span><span>✎</span><span>🗑️</span></div>
+        </div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-head">Preset Categories</div>
+        <p class="cat-sub">Kategori bawaan. Edit &amp; hapus tersedia di paket Pro.</p>
+        <div class="preset-grid">
+          <div class="preset-item"><span class="l">🍜 Makanan &amp; Minuman</span><span class="dotc" style="background:#f97316;"></span></div>
+          <div class="preset-item"><span class="l">🚗 Transportasi</span><span class="dotc" style="background:#3b82f6;"></span></div>
+          <div class="preset-item"><span class="l">🛍️ Belanja</span><span class="dotc" style="background:#ec4899;"></span></div>
+          <div class="preset-item"><span class="l">💊 Kesehatan</span><span class="dotc" style="background:#22c55e;"></span></div>
+          <div class="preset-item"><span class="l">🎬 Hiburan</span><span class="dotc" style="background:#8b5cf6;"></span></div>
+          <div class="preset-item"><span class="l">🧾 Tagihan &amp; Utilitas</span><span class="dotc" style="background:#eab308;"></span></div>
+          <div class="preset-item"><span class="l">🎓 Pendidikan</span><span class="dotc" style="background:#06b6d4;"></span></div>
+          <div class="preset-item"><span class="l">📦 Lainnya</span><span class="dotc" style="background:#6b7280;"></span></div>
+          <div class="preset-item"><span class="l">💼 Gaji</span><span class="dotc" style="background:#22c55e;"></span></div>
+          <div class="preset-item"><span class="l">💻 Freelance</span><span class="dotc" style="background:#3b82f6;"></span></div>
+          <div class="preset-item"><span class="l">📈 Investasi</span><span class="dotc" style="background:#f97316;"></span></div>
+          <div class="preset-item"><span class="l">💰 Lainnya</span><span class="dotc" style="background:#6b7280;"></span></div>
+        </div>
+        <button class="lock-btn">🔒 Edit kategori bawaan · Pro</button>
+      </div>
+    </div>
+
+    <!-- HOUSEHOLD -->
+    <div class="page" id="page-household">
+      <div class="page-header"><div><h1>Household</h1></div></div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:800;font-size:15px;">🏠 Mada</div><span>✎</span>
+        </div>
+        <div class="household-member">
+          <div class="l"><div class="avatar" style="background:#4338ca;">A</div>
+            <div><div style="font-weight:700;font-size:14px;">Armada yudha satrya</div><div style="font-size:12px;color:var(--text-soft);">armadayudha23@gmail.com</div></div>
+          </div>
+          <span class="admin-pill">Admin</span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:6px;">Manage Finances Together!</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px;">Undang pasangan atau anggota keluarga untuk berbagi pengeluaran dan mengatur budget household bersama-sama.</div>
+        <div class="household-code">VHKD4BRAJD</div>
+        <button class="btn-full">📋 Salin Kode</button>
+      </div>
+      <div class="card leave-card">
+        <div class="leave-title">Leave Household</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-bottom:14px;">Keluar dari household ini. Transaksi yang sudah kamu catat tetap tertinggal di household.</div>
+        <button class="btn-outline-red">↪️ Leave Household</button>
+      </div>
+    </div>
+
+    <!-- WHATSAPP -->
+    <div class="page" id="page-whatsapp">
+      <div class="page-header"><div><h1>WhatsApp Bot</h1></div></div>
+      <div class="empty-state"><div class="emoji">💬</div>Hubungkan WhatsApp untuk catat transaksi lewat chat.</div>
+    </div>
+
+    <!-- SUPPORT -->
+    <div class="page" id="page-support">
+      <div class="page-header"><div><h1>Support</h1></div></div>
+      <div class="empty-state"><div class="emoji">🛟</div>Butuh bantuan? Hubungi tim support kami.</div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-header"><div><h1>Settings</h1></div></div>
+      <div class="card">
+        <div class="desc">Ubah nama tampilan kamu</div>
+        <div class="user-row" style="padding:0;margin-bottom:10px;">
+          <div class="avatar">A</div>
+          <div><div class="name">Armada yudha satrya</div><div class="mail">armadayudha23@gmail.com</div></div>
+        </div>
+        <label>Name</label>
+        <input class="name-input" value="Armada yudha satrya">
+        <button class="icon-btn primary" style="border-radius:10px;">Simpan Perubahan</button>
+      </div>
+      <div class="card">
+        <div class="cat-head" style="margin-bottom:2px;">🔔 Notifikasi</div>
+        <div class="desc">Pengingat tagihan rutin dan info penting langsung ke perangkat kamu</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><b style="font-size:14px;">Push notifications</b><div style="font-size:12.5px;color:var(--text-soft);">Aktifkan untuk dapat pengingat recurring dan update lainnya</div></div>
+          <div class="toggle" id="pushToggle"><div class="knob"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cat-head" style="margin-bottom:2px;">🗄️ Data</div>
+        <div class="desc">Download transaksi sebagai Excel, atau impor transaksi dari aplikasi lain (CSV)</div>
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <div class="icon-btn">⬇️ Download transaksi (Excel)</div>
+          <div class="icon-btn">⬆️ Import transaksi (CSV)</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-soft);">Format CSV impor: kolom minimal Date dan Amount (opsional: Type, Category, Note). Kategori dicocokkan otomatis, dibuat kalau belum ada.</div>
+      </div>
+      <div class="card danger-card">
+        <div class="danger-title">⚠️ Hapus Akun</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-bottom:10px;">Hapus akun Kynan kamu dan data yang terhubung dengan akun ini.</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-bottom:16px;">Sebelum menghapus akun, kamu wajib keluar dari semua household. Kalau kamu admin terakhir, pindahkan ownership ke anggota lain atau hapus household dulu.</div>
+        <button class="btn-outline-red" style="background:var(--red);color:#fff;border:none;">🗑️ Hapus akun saya</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="float-ai">🤖 Kynan AI</div>
+  <div class="float-add">+</div>
 </div>
-<div class="copy-toast" id="toast">Disalin ke clipboard</div>
 
 <script>
-const SECTION_DEFS = [
-  {key:'hoox', label:'Hoox', hint:'kalimat pembuka pemantik'},
-  {key:'story', label:'Story', hint:'inti kejadian'},
-  {key:'observation', label:'Observation', hint:'detail & data tambahan'},
-  {key:'problem', label:'Problem', hint:'kenapa ini jadi masalah'},
-  {key:'insight', label:'Insight', hint:'pelajaran dari kasus ini'},
-  {key:'solusi', label:'Solusi', hint:'langkah penyelesaian'},
-  {key:'benefit', label:'Benefit', hint:'dampak baik kalau ini berjalan'},
-  {key:'connection', label:'Connection', hint:'kaitkan ke nilai/isu besar'},
-  {key:'cta', label:'CTA', hint:'pertanyaan interaksi ke penonton'},
-  {key:'reaksi', label:'Reaksi Isu', hint:'penutup renungan singkat'},
-];
+  const navItems = document.querySelectorAll('.nav-item');
+  const pages = document.querySelectorAll('.page');
 
-let state = { items: [], selectedId: null, view: 'edit', settings: null };
-
-const DEFAULT_SETTINGS = {
-  apiKey: '',
-  intro: `"hai hai Selamat siang semuanya, Perkenalkan saya [Siapa] disini akan membawakan sesi live Gerbang Nusantara seperti biasa di hari sabtu jam [---] siang saat ini, di sesi live ini kita akan membahas kejadian yang terjadi dalam minggu terakhir."\n\n"Di sesi live ini kita akan membahas berbagai kejadian penting yang terjadi dalam satu minggu terakhir dari isu nasional sampai daerah, yang tentunya relevan dengan kita semua."\n\n"Dan hari ini kita akan bahas beberapa topik hangat."\n\n"Dan seperti biasa, nanti di tengah live juga akan ada info peluang kolaborasi untuk teman-teman yang stay sampai akhir."\n\n"Jadi pastikan jangan ke mana-mana… langsung kita masuk ke berita pertama."`,
-  promo: `"Teman-teman, sebelum lanjut ke berita berikutnya, kami ingin menyampaikan bahwa Gerbang Nusantara saat ini terbuka untuk kerja sama dan sponsor."\n\n"Buat kalian yang punya UMKM, brand lokal, jasa atau usaha, atau kegiatan/event yang ingin dipromosikan, bisa banget tampil di live ini dan dijangkau langsung oleh audiens kami."\n\n"Formatnya bisa mention di live, review produk, atau bahkan segmen khusus."\n\n"Silakan hubungi kami melalui DM atau kontak yang ada di bio ya."\n\n"Dukung media lokal, dan mari tumbuh bersama."\n\n"Lanjut kita ke berita berikutnya."`,
-  outro: `"Itu dia beberapa kejadian penting minggu ini yang sudah kita bahas bersama."\n\n"Terima kasih sudah menyimak sampai akhir, jangan lupa like, comment, dan share live ini ke teman-teman kalian."\n\n"Sampai jumpa di sesi live Gerbang Nusantara selanjutnya, tetap kritis dan sampai jumpa!"`
-};
-
-function uid(){ return Math.random().toString(36).slice(2,10); }
-
-function blankHasil(){
-  const h = {judul:''};
-  SECTION_DEFS.forEach(s=>h[s.key]=[]);
-  return h;
-}
-
-function newItem(){
-  return {
-    id: uid(), url:'', judul:'', kategori:'', raw:'',
-    insertPromoAfter:false, status:'draft', error:'', hasil: blankHasil()
-  };
-}
-
-function loadAll(){
-  try{
-    const r = localStorage.getItem('gn-items');
-    state.items = r ? JSON.parse(r) : [];
-  }catch(e){ state.items = []; }
-  try{
-    const r2 = localStorage.getItem('gn-settings');
-    state.settings = r2 ? JSON.parse(r2) : {...DEFAULT_SETTINGS};
-  }catch(e){ state.settings = {...DEFAULT_SETTINGS}; }
-  if(state.items.length){ state.selectedId = state.items[0].id; }
-  render();
-}
-
-function saveItems(){
-  try{ localStorage.setItem('gn-items', JSON.stringify(state.items)); }catch(e){ console.error(e); }
-}
-function saveSettings(){
-  try{ localStorage.setItem('gn-settings', JSON.stringify(state.settings)); }catch(e){ console.error(e); }
-}
-
-function addItem(){
-  const it = newItem();
-  state.items.unshift(it);
-  state.selectedId = it.id;
-  state.view = 'edit';
-  saveItems();
-  render();
-}
-
-function deleteItem(id){
-  state.items = state.items.filter(i=>i.id!==id);
-  if(state.selectedId===id){ state.selectedId = state.items[0]?.id || null; }
-  saveItems();
-  render();
-}
-
-function getItem(id){ return state.items.find(i=>i.id===id); }
-
-function updateField(id, field, value){
-  const it = getItem(id);
-  if(!it) return;
-  it[field] = value;
-  saveItems();
-}
-
-function updateSection(id, key, text){
-  const it = getItem(id);
-  if(!it) return;
-  it.hasil[key] = text.split('\n').map(l=>l.trim()).filter(Boolean);
-  saveItems();
-}
-
-function selectItem(id){ state.selectedId = id; state.view='edit'; render(); }
-function showCompile(){ state.view='compile'; render(); }
-function showSettings(){ state.view='settings'; render(); }
-
-function setLamp(busy){
-  document.getElementById('lamp').classList.toggle('busy', busy);
-}
-
-// FIX UTAMA: Migrasi Total ke Google Gemini API (100% Gratis & Bebas CORS)
-async function generate(id){
-  const it = getItem(id);
-  if(!it || !it.raw.trim()){ it.error='Tempel dulu isi/teks berita sebelum diproses.'; render(); return; }
-  
-  if(!state.settings.apiKey || !state.settings.apiKey.trim()){
-    it.error='Gemini API Key belum diatur. Klik menu "Template & API" di kanan atas untuk memasukkan key gratis.';
-    render();
-    return;
+  function setActive(pageId){
+    navItems.forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
+    pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
   }
 
-  it.status = 'generating'; it.error=''; render(); setLamp(true);
-
-  const systemInstruction = `Kamu adalah penulis naskah profesional untuk sesi live streaming berita mingguan bernama "Gerbang Nusantara". Tugasmu: ubah artikel berita mentah menjadi naskah teleprompter dengan format baku JSON. JAWAB HANYA DALAM JSON VALID, TAMPILKAN JSON SAJA TANPA MARKDOWN BACKTICKS (\`\`\`json), TANPA PENJELASAN LAIN.
-
-Format setiap section adalah ARRAY berisi potongan kalimat-kalimat lisan yang sangat pendek (3-9 kata), mengalir, santai, dan mudah dibaca per potongan frasa alami tanpa putus di tengah kalimat panjang.
-
-Struktur JSON wajib tepat seperti ini:
-{
- "judul": "judul singkat berita, gaya headline menarik",
- "hoox": ["potongan kalimat 1", "potongan 2"],
- "story": ["potongan kalimat 1", "potongan 2"],
- "observation": ["potongan kalimat 1", "potongan 2"],
- "problem": ["potongan kalimat 1", "potongan 2"],
- "insight": ["potongan kalimat 1", "potongan 2"],
- "solusi": ["potongan kalimat 1", "potongan 2"],
- "benefit": ["potongan kalimat 1", "potongan 2"],
- "connection": ["potongan kalimat 1", "potongan 2"],
- "cta": ["potongan kalimat 1", "potongan 2"],
- "reaksi": ["potongan kalimat 1", "potongan 2"]
-}
-
-Gunakan bahasa Indonesia jurnalistik lisan yang netral, faktual, dan murni berdasarkan data artikel sumber. Jangan mengarang hoax atau mengubah fakta yang tidak ada di teks sumber.`;
-
-  const userMsg = `Judul berita saat ini: ${it.judul || 'Otomatis'}\nKategori: ${it.kategori || 'Umum'}\nIsi Teks Berita mentah:\n${it.raw}`;
-
-  // Menggunakan model Gemini 1.5 Flash (Gratis, Cepat, dan Akurat)
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${state.settings.apiKey.trim()}`;
-
-  try{
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: userMsg }] }],
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        generationConfig: {
-          responseMimeType: "application/json",
-          temperature: 0.3
-        }
-      })
-    });
-    
-    if(!resp.ok) {
-      const errData = await resp.json();
-      throw new Error(errData.error?.message || 'Gemini API Error');
-    }
-
-    const data = await resp.json();
-    let rawText = data.candidates[0].content.parts[0].text.trim();
-    
-    // Pembersihan jika model melanggar instruksi dan tetap membungkus dengan markdown
-    rawText = rawText.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
-    
-    const parsed = JSON.parse(rawText);
-    
-    it.hasil = { judul: parsed.judul || it.judul || 'Berita Terproses' };
-    SECTION_DEFS.forEach(s => { 
-      it.hasil[s.key] = Array.isArray(parsed[s.key]) ? parsed[s.key] : []; 
-    });
-    
-    if(!it.judul) it.judul = it.hasil.judul;
-    it.status = 'done';
-  }catch(e){
-    console.error(e);
-    it.status = 'error';
-    it.error = 'Gagal memproses naskah dengan Gemini. Pastikan API Key Anda benar dan kuota gratis mencukupi.';
-  }
-  setLamp(false);
-  saveItems();
-  render();
-}
-
-function copyToClipboard(text){
-  navigator.clipboard.writeText(text).then(()=>{
-    const t = document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 1600);
-  });
-}
-
-function compileScript(){
-  const s = state.settings;
-  let lines = [];
-  lines.push({type:'tag', text:'PEMBUKA'});
-  (s.intro || '').split('\n').forEach(l=>{ if(l.trim()) lines.push({type:'line', text:l.trim()}); });
-
-  state.items.forEach((it, idx)=>{
-    lines.push({type:'title', text: `BERITA ${idx+1}: ${it.judul || it.hasil.judul || '(belum berjudul)'}`});
-    SECTION_DEFS.forEach(s2=>{
-      const arr = it.hasil[s2.key] || [];
-      if(!arr.length) return;
-      lines.push({type:'tag', text:s2.label});
-      arr.forEach(l=> lines.push({type:'line', text:`"${l.replace(/^"|"$/g,'')}"`}));
-    });
-    if(it.insertPromoAfter){
-      lines.push({type:'tag', text:'SELINGAN PROMOSI'});
-      (s.promo || '').split('\n').forEach(l=>{ if(l.trim()) lines.push({type:'promo', text:l.trim()}); });
-    }
+  navItems.forEach(item=>{
+    item.addEventListener('click', ()=> setActive(item.dataset.page));
   });
 
-  lines.push({type:'tag', text:'PENUTUP'});
-  (s.outro || '').split('\n').forEach(l=>{ if(l.trim()) lines.push({type:'line', text:l.trim()}); });
-  return lines;
-}
+  // active dot indicator
+  navItems.forEach(item=>{
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    item.appendChild(dot);
+  });
 
-function compileScriptText(){
-  return compileScript().map(l=>{
-    if(l.type==='tag') return `\n[${l.text}]\n`;
-    if(l.type==='title') return `\n===== ${l.text} =====\n`;
-    return l.text;
-  }).join('\n');
-}
+  document.getElementById('pushToggle').addEventListener('click', function(){
+    this.classList.toggle('on');
+  });
 
-function render(){
-  renderSidebar();
-  renderMain();
-}
-
-function renderSidebar(){
-  const list = document.getElementById('itemList');
-  if(!state.items.length){
-    list.innerHTML = `<div class="empty-hint">Belum ada berita. Klik "+ Tambah Berita" untuk mulai.</div>`;
-    return;
-  }
-  list.innerHTML = state.items.map((it, idx)=>{
-    const title = it.judul || it.hasil.judul || '(belum berjudul)';
-    return `<div class="item-card ${it.id===state.selectedId && state.view==='edit' ? 'active':''}" onclick="selectItem('${it.id}')">
-      <div class="n">BERITA ${idx+1}${it.kategori ? ' · '+escapeHtml(it.kategori) : ''}</div>
-      <div class="t">${escapeHtml(title)}</div>
-      <div class="meta"><span class="status-dot status-${it.status}"></span>${statusLabel(it.status)}</div>
-    </div>`;
-  }).join('');
-}
-
-function statusLabel(s){
-  return {draft:'Draft', generating:'Memproses…', done:'Siap', error:'Gagal'}[s] || s;
-}
-
-function escapeHtml(str){
-  return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function renderMain(){
-  const main = document.getElementById('main');
-  if(state.view==='settings'){ renderSettings(main); return; }
-  if(state.view==='compile'){ renderCompile(main); return; }
-
-  const it = getItem(state.selectedId);
-  if(!it){
-    main.innerHTML = `<div class="empty-main">
-      <div class="big">🎙️</div>
-      <h3>Belum ada berita dipilih</h3>
-      <p>Tambahkan berita dari sidebar, tempel tulisan berita Anda, lalu dapatkan naskah teleprompter instan gratis dengan Gemini AI.</p>
-      <div class="toolbar"><button class="primary" onclick="showSettings()">Atur Template & Gemini API Key</button></div>
-    </div>`;
-    return;
-  }
-
-  main.innerHTML = `
-    <div class="topbar">
-      <div>
-        <h2>Edit Berita</h2>
-        <div class="sub">Ubah artikel mentah menjadi gaya baca berita presenter TV.</div>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button class="del-link" onclick="showSettings()">Template & API</button>
-        <button class="del-link" onclick="deleteItem('${it.id}')">Hapus berita ini</button>
-      </div>
-    </div>
-
-    <label>Link berita (opsional)</label>
-    <input type="url" placeholder="https://..." value="${escapeHtml(it.url)}" oninput="updateField('${it.id}','url',this.value)">
-
-    <div class="row2">
-      <div>
-        <label>Judul (opsional)</label>
-        <input type="text" placeholder="Judul berita" value="${escapeHtml(it.judul)}" oninput="updateField('${it.id}','judul',this.value)">
-      </div>
-      <div>
-        <label>Kategori / topik</label>
-        <input type="text" placeholder="mis. Berita Daerah" value="${escapeHtml(it.kategori)}" oninput="updateField('${it.id}','kategori',this.value)">
-      </div>
-    </div>
-
-    <label>Tempel isi artikel di sini</label>
-    <textarea class="raw" placeholder="Salin isi teks berita lengkap di sini..." oninput="updateField('${it.id}','raw',this.value)">${escapeHtml(it.raw)}</textarea>
-
-    <div class="promo-toggle">
-      <input type="checkbox" id="promo-${it.id}" ${it.insertPromoAfter?'checked':''} onchange="updateField('${it.id}','insertPromoAfter',this.checked)">
-      <label for="promo-${it.id}" style="margin:0;text-transform:none;font-weight:400;color:var(--text-dim);">Sisipkan segmen "Selingan Promosi" setelah berita ini</label>
-    </div>
-
-    <button class="gen-btn" ${it.status==='generating'?'disabled':''} onclick="generate('${it.id}')">
-      ${it.status==='generating' ? '⏳ Sedang Meracik Naskah...' : (it.status==='done' ? '🔁 Regenerasi Naskah' : 'Ubah ke Naskah')}
-    </button>
-
-    ${it.error ? `<div class="err-box">${escapeHtml(it.error)}</div>` : ''}
-
-    ${it.status==='done' ? renderSections(it) : ''}
-  `;
-}
-
-function renderSections(it){
-  return `<div class="sections">
-    ${SECTION_DEFS.map(s=>{
-      const arr = it.hasil[s.key]||[];
-      return `<div class="sec-block">
-        <div class="sec-head"><span class="tag">${s.label}</span><span class="hint">${s.hint}</span></div>
-        <div class="sec-body">
-          <textarea rows="${Math.max(3, arr.length)}" oninput="updateSection('${it.id}','${s.key}',this.value); autoGrow(this)" onfocus="autoGrow(this)">${arr.map(l=>escapeHtml(l)).join('\n')}</textarea>
-        </div>
-      </div>`;
-    }).join('')}
-  </div>`;
-}
-
-function autoGrow(el){ el.style.height='auto'; el.style.height = el.scrollHeight+'px'; }
-
-function renderSettings(main){
-  const s = state.settings;
-  main.innerHTML = `
-    <div class="topbar">
-      <div><h2>Pengaturan & API Google Gemini</h2><div class="sub">Gunakan Gemini API Key gratis untuk menghindari error CORS browser.</div></div>
-      <button class="del-link" onclick="state.view='edit';render()">← Kembali</button>
-    </div>
-    <div class="settings-panel">
-      <h3>Google Gemini API Key (Gratis)</h3>
-      <input type="password" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;" placeholder="AIzaSy..." value="${escapeHtml(s.apiKey)}" oninput="state.settings.apiKey=this.value; saveSettings();">
-      <small style="color:var(--text-dim); display:block; margin-top:5px;">Kunci disimpan aman secara lokal di browser Anda pribadi. Dapatkan gratis di <a href="[https://aistudio.google.com/](https://aistudio.google.com/)" target="_blank" style="color:var(--amber);">Google AI Studio</a>.</small>
-    </div>
-    <div class="settings-panel">
-      <h3>Pembuka Sesi Live</h3>
-      <textarea rows="8" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;" oninput="state.settings.intro=this.value; saveSettings();">${escapeHtml(s.intro)}</textarea>
-    </div>
-    <div class="settings-panel">
-      <h3>Selingan Promosi</h3>
-      <textarea rows="8" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;" oninput="state.settings.promo=this.value; saveSettings();">${escapeHtml(s.promo)}</textarea>
-    </div>
-    <div class="settings-panel">
-      <h3>Penutup Sesi Live</h3>
-      <textarea rows="6" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;" oninput="state.settings.outro=this.value; saveSettings();">${escapeHtml(s.outro)}</textarea>
-    </div>
-  `;
-}
-
-function renderCompile(main){
-  const lines = compileScript();
-  main.innerHTML = `
-    <div class="topbar">
-      <div><h2>Naskah Lengkap</h2><div class="sub">Siap dibaca langsung atau disalin ke perangkat teleprompter Anda.</div></div>
-      <button class="del-link" onclick="state.view='edit';render()">← Kembali</button>
-    </div>
-    <div class="toolbar">
-      <button class="primary" onclick="copyToClipboard(compileScriptText())">📋 Salin Semua</button>
-      <button onclick="downloadScript()">⬇ Unduh .txt</button>
-      <button onclick="showSettings()">⚙️ Edit Template</button>
-    </div>
-    <div class="prompter-wrap">
-      ${lines.map(l=>{
-        if(l.type==='tag') return `<div class="prompter-line tag-line">${escapeHtml(l.text)}</div>`;
-        if(l.type==='title') return `<div class="prompter-line title-line">${escapeHtml(l.text)}</div>`;
-        if(l.type==='promo') return `<div class="prompter-line promo-line">${escapeHtml(l.text)}</div>`;
-        return `<div class="prompter-line">${escapeHtml(l.text)}</div>`;
-      }).join('')}
-    </div>
-  `;
-}
-
-function downloadScript(){
-  const blob = new Blob([compileScriptText()], {type:'text/plain;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'naskah-live-gerbang-nusantara.txt';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-loadAll();
+  setActive('transactions');
 </script>
 </body>
 </html>
